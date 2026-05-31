@@ -1,6 +1,6 @@
 ## 🚀 Live Demo & API
 
-* **Live Application:** [כאן נשים את הקישור לאתר כשנעלה אותו לאוויר]
+* **Live Application:** http://cost-manager-app-client-side-project-bkqr5w4ly.vercel.app
 * **Remote JSON Rates API:**https://assafdali.github.io/cost-manager-rates-client-side-project/rates.json**
 
 ---
