@@ -1,25 +1,19 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+// Importing the pie chart component we created earlier.
+import CostsPieChart from './components/CostsPieChart';
+// Importing the newly created bar chart component.
+import CostsBarChart from './components/CostsBarChart';
 
-function App() {
+export default function App() {
+  
+  // Returning the main application layout with both of our charts.
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1 style={{ textAlign: 'center' }}>Cost Manager Application</h1>
+      <CostsPieChart />
+      
+      {/* Rendering the bar chart right below the pie chart. */}
+      <CostsBarChart />
     </div>
   );
 }
-
-export default App;
