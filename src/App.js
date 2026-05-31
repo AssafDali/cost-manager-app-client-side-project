@@ -1,10 +1,11 @@
+// Force brand new Vercel build - v1.0
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import db from './db';
 import './App.css';
 
 // Importing your professional chart components
-import CostsPieChart from './components/CostsPieChart';
-import CostsBarChart from './components/CostsBarChart';
+import CostsPieChart from './comp/CostsPieChart';
+import CostsBarChart from './comp/CostsBarChart';
 
 const DEFAULT_RATES_URL = `${process.env.PUBLIC_URL || ''}/rates.json`;
 const costsDB = db.openCostsDB('cost-manager', 1);
