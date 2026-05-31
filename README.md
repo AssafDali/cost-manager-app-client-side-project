@@ -1,3 +1,18 @@
+## 🚀 Live Demo & API
+
+* **Live Application:** [כאן נשים את הקישור לאתר כשנעלה אותו לאוויר]
+* **Remote JSON Rates API:**https://assafdali.github.io/cost-manager-rates-client-side-project/rates.json**
+
+---
+
+## 👥 Team Members
+
+
+* **Loren Kricheli** - ID: 322632183
+* **Hadar Gabay** - ID: 208837120 
+* **Assaf Dali** - ID: 209006576 
+
+---
 # Cost Manager Application
 
 A client-side cost-tracking web app built with React. All data is persisted in

@@ -165,16 +165,17 @@ function addCostInternal(key, cost) {
         throw new Error('addCost: "sum" must be a number');
     }
 
-    const today = new Date();
+    const itemDate = cost.date ? new Date(cost.date) : new Date();
+    
     const record = {
         sum,
         currency: String(cost.currency || 'USD'),
         category: String(cost.category || 'General'),
         description: String(cost.description == null ? '' : cost.description),
         date: {
-            day: today.getDate(),
-            month: today.getMonth() + 1,
-            year: today.getFullYear()
+            day: itemDate.getDate(),
+            month: itemDate.getMonth() + 1,
+            year: itemDate.getFullYear()
         }
     };
 
