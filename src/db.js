@@ -171,7 +171,7 @@ function addCostInternal(key, cost) {
         sum,
         currency: String(cost.currency || 'USD'),
         category: String(cost.category || 'General'),
-        description: String(cost.description == null ? '' : cost.description),
+        description: String(cost.description === null || cost.description === undefined ? '' : cost.description),
         date: {
             day: itemDate.getDate(),
             month: itemDate.getMonth() + 1,

@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+test('renders cost manager application title', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  // Searching for your real custom title on the screen
+  const titleElement = screen.getByText(/Cost Manager Application/i);
+  expect(titleElement).toBeInTheDocument();
 });

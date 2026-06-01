@@ -175,40 +175,40 @@
     /* ------------------------------------------------------------------ */
 
     function addCostInternal(key, cost) {
-        if (!cost || typeof cost !== 'object') {
-            throw new Error('addCost: argument must be an object');
-        }
-
-        var sum = toNumber(cost.sum, NaN);
-        if (!Number.isFinite(sum)) {
-            throw new Error('addCost: "sum" must be a number');
-        }
-
-        var today = new Date();
-        var record = {
-            sum: sum,
-            currency: String(cost.currency || 'USD'),
-            category: String(cost.category || 'General'),
-            description: String(cost.description == null ? '' : cost.description),
-            date: {
-                day: today.getDate(),
-                month: today.getMonth() + 1,
-                year: today.getFullYear()
-            }
-        };
-
-        var costs = readCosts(key);
-        costs.push(record);
-        writeCosts(key, costs);
-
-        // Per spec, the value returned by addCost has these four properties.
-        return {
-            sum: record.sum,
-            currency: record.currency,
-            category: record.category,
-            description: record.description
-        };
+    if (!cost || typeof cost !== 'object') {
+        throw new Error('addCost: argument must be an object');
     }
+    const sum = toNumber(cost.sum, NaN);
+    if (!Number.isFinite(sum)) {
+        throw new Error('addCost: "sum" must be a number');
+    }
+
+    const itemDate = cost.date ? new Date(cost.date) : new Date();
+    
+    const record = {
+        sum,
+        currency: String(cost.currency || 'USD'),
+        category: String(cost.category || 'General'),
+        description: String(cost.description == null ? '' : cost.description),
+        date: {
+            day: itemDate.getDate(),
+            month: itemDate.getMonth() + 1,
+            year: itemDate.getFullYear()
+        }
+    };
+
+    const costs = readCosts(key);
+    costs.push(record);
+    writeCosts(key, costs);
+
+    // Per spec, addCost returns these four properties only.
+    return {
+        sum: record.sum,
+        currency: record.currency,
+        category: record.category,
+        description: record.description
+    };
+}
 
     function getReportInternal(key, currency, year, month) {
         var now = new Date();

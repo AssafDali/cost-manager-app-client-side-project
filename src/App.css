@@ -5,12 +5,12 @@
   --bg-gradient: linear-gradient(140deg, #fbf9f5 0%, #f5ece1 50%, #ede2d3 100%);
   --card-bg: #ffffff;
   --text-main: #3e3832;
-  --text-titles: #2d251e; /* חום שוקולד עמוק לכותרות */
+  --text-titles: #2d251e; /* Deep chocolate brown for titles */
   --text-muted: #a3978c;
   --accent-warm: #d9c3b0;
   --input-bg: #fdfbf7;
   
-  /* צבעי פסטל רכים ומותאמים לקטגוריות */
+  /* Soft pastel colors tailored for categories */
   --color-food: #f7d6cd;
   --color-car: #f5e4d3;
   --color-utilities: #e8edd8;
@@ -34,7 +34,7 @@ body {
   padding: 60px 20px;
 }
 
-/* כותרת מינימליסטית נקייה ומוסטת שמאלה */
+/* Clean, left-aligned minimalist header */
 .main-header {
   text-align: left;
   margin-bottom: 50px;
@@ -56,7 +56,7 @@ body {
   font-weight: 500;
 }
 
-/* באנר סטטוס ממורכז ומעוגל ברכות */
+/* Centered status banner with soft rounding */
 .status-banner-container {
   text-align: center;
   width: 100%;
@@ -75,7 +75,7 @@ body {
   border: 1px solid rgba(0,0,0,0.02);
 }
 
-/* גריד א-סימטרי חכם ומרווח */
+/* Smart, spacious asymmetric grid layout */
 .grid-layout {
   display: grid;
   grid-template-columns: 1.2fr 1fr;
@@ -86,7 +86,7 @@ body {
   grid-column: span 2;
 }
 
-/* כרטיסיות עגולות פרימיום */
+/* Premium rounded cards */
 .card {
   background: var(--card-bg);
   border-radius: 32px;
@@ -97,7 +97,7 @@ body {
 
 .card h2 {
   margin-top: 0;
-  font-size: 1.4rem; /* כותרת מנהיגה מוגדלת */
+  font-size: 1.4rem; /* Enlarged leading title */
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--text-titles);
@@ -111,7 +111,7 @@ body {
   margin-bottom: 25px;
 }
 
-/* שדות קלט רכים עם תוויות מעוצבות מחדש */
+/* Soft input fields with redesigned styled labels */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -120,9 +120,9 @@ body {
 
 .form-group label {
   font-weight: 700;
-  font-size: 0.75rem; /* קטן ומקצועי יותר */
+  font-size: 0.75rem; /* Smaller, more professional size */
   margin-bottom: 8px;
-  color: #8a7f73; /* חום-אפרפר בהיר ורך */
+  color: #8a7f73; /* Soft light taupe-brown */
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -144,7 +144,7 @@ body {
   box-shadow: 0 0 0 3px #f5ece1, 0 4px 12px rgba(0,0,0,0.02);
 }
 
-/* כפתורים חלקים */
+/* Smooth buttons */
 button {
   width: 100%;
   padding: 16px;
@@ -166,7 +166,7 @@ button {
   transform: translateY(-1px);
 }
 
-/* סידור שורת ה-URL במסך ההגדרות (Flexbox מודרני) */
+/* URL input row configuration for settings screen (Modern Flexbox) */
 .url-input-row {
   display: flex;
   gap: 12px;
@@ -197,14 +197,14 @@ button {
   margin-bottom: 20px;
 }
 
-/* קופסת ה-Live Rates עם מרווח תחתון נדיב */
+/* Live Rates box with generous bottom padding */
 .rates-display-box {
   margin-top: 30px;
   background: var(--input-bg);
   padding: 24px;
   border-radius: 24px;
   border: 1px solid rgba(0, 0, 0, 0.01);
-  padding-bottom: 40px; /* מניעת חניקה בתחתית */
+  padding-bottom: 40px; /* Prevention of bottom crowding */
 }
 
 .rates-display-box h4 {
@@ -234,7 +234,7 @@ button {
   color: #544b43;
 }
 
-/* שורת הפילטרים */
+/* Filter bar */
 .filter-bar .filter-inputs {
   display: flex;
   gap: 20px;
@@ -245,7 +245,7 @@ button {
   margin-bottom: 0;
 }
 
-/* מעבר מלא למבנה קפסולות שורות עצמאיות (כמו במובייל) */
+/* Full transition to independent capsule row structure (Mobile-like) */
 .report-table {
   width: 100%;
   border-collapse: separate;
@@ -285,9 +285,9 @@ button {
   color: var(--text-main);
 }
 
-/* שורת סיכום ענקית וממורכזת כאלמנט הכתר הראשי של הדוח */
+/* Giant centered summary row as the main crown element of the report */
 .report-total-footer {
-  text-align: center; /* מרוכז למראה פרימיום */
+  text-align: center; 
   margin-top: 45px;
   padding-top: 25px;
   border-top: 1px solid rgba(0,0,0,0.03);
@@ -303,14 +303,14 @@ button {
 
 .total-highlight {
   font-weight: 800;
-  font-size: 3.5rem; /* גודל ענק ומנקר עיניים במרכז */
+  font-size: 3.5rem; /* Huge, eye-catching size in center */
   letter-spacing: -0.04em;
   color: var(--text-titles);
   display: block;
   margin-top: 8px;
 }
 
-/* תגיות קטגוריה */
+/* Category badges */
 .badge {
   padding: 6px 14px;
   border-radius: 12px;
@@ -325,7 +325,7 @@ button {
 .badge-education { background-color: var(--color-education); }
 .badge-entertainment { background-color: var(--color-entertainment); }
 
-/* גרפים */
+/* Charts */
 .mock-pie-visual {
   display: flex;
   flex-direction: column;
@@ -353,7 +353,7 @@ button {
   font-size: 0.95rem;
 }
 
-/* גרף עמודות שנתי קפסולה מוחשי ומשופר */
+/* Tangible, improved annual capsule bar graph */
 .mock-bar-graph {
   display: flex;
   justify-content: space-between;
@@ -369,16 +369,16 @@ button {
   flex: 1;
 }
 
-/* עמודות קפסולה חלקות עם הגנה של גובה מינימלי למניעת היעלמות */
+/* Smooth capsule columns with min-height protection to prevent disappearance */
 .bar-fill {
   width: 32px;
-  background: #ede2d3; /* צבע ברירת מחדל רך ונוכח */
+  background: #ede2d3; 
   border-radius: 99px;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .bar-column:hover .bar-fill {
-  background: #544b43; /* הופך לחום כהה ב-Hover */
+  background: #544b43; 
 }
 
 .bar-value-tooltip {
