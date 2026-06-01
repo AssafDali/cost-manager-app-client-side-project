@@ -1,65 +1,17 @@
 /* ============================================================================
- * src/db.js  (ES-module / React Version)
+ * src/db.js  (ES-Module / React Version)
  * ----------------------------------------------------------------------------
- * This is the React-side data-layer for the Cost Manager application.
- * It mirrors, function-for-function, the vanilla data-layer that lives at
- * the project root in /db.js (which is the file submitted separately on
- * Moodle and consumed by the auto-test HTML page).
- *
- * Why two files instead of importing the vanilla one?
- *   Create-React-App's ModuleScopePlugin forbids `import`-ing modules
- *   that live outside of /src, so we cannot pull /db.js straight in.
- *   Instead, we keep two intentionally-parallel implementations, both
- *   small enough to be reviewed side-by-side and both backed by the
- *   exact same localStorage layout, so the auto-test HTML page and the
- *   React UI will always read/write compatible data.
- *
- * Public API (mirrors window.db in the vanilla file):
- *   openCostsDB(name, version)                   -> reference object
- *   addCost({ sum, currency, category, desc })   -> echoed cost item
- *   getReport(currency, year, month)             -> month report object
- *
- * Extras (used by the React UI):
- *   getAllCosts()
- *   getCategoryBreakdown(currency, year, month)
- *   getMonthlyTotals(currency, year)
- *   fetchExchangeRates(url)
- *   getExchangeRates() / setExchangeRates(rates)
- *   convert(sum, from, to)
- *   clearCosts()
- *
- * Storage layout (localStorage):
- *   "costmgr::<name>::v<version>" -> JSON array of cost items
- *   "costmgr::exchangeRates"      -> JSON of { USD, GBP, EURO, ILS }
- *
- * Currency math:
- *   Rates are expressed against 1 USD, exactly as the project doc states:
- *       { USD:1, GBP:0.6, EURO:0.7, ILS:3.4 }
- *   Conversion: usd = sum / rates[from];  result = usd * rates[to]
+ * Cost Manager - Local Storage data layer.
  * ========================================================================== */
-
-/* ------------------------------------------------------------------ */
-/* Constants                                                          */
-/* ------------------------------------------------------------------ */
 
 const DEFAULT_RATES = { USD: 1, GBP: 0.6, EURO: 0.7, ILS: 3.4 };
 const RATES_KEY = 'costmgr::exchangeRates';
 const STORE_PREFIX = 'costmgr::';
 const SUPPORTED_CURRENCIES = ['USD', 'GBP', 'EURO', 'ILS'];
 
-/* ------------------------------------------------------------------ */
-/* Module-private state - keeps track of the "active" database so     */
-/* that the default-exported db object behaves like the global window */
-/* db in the vanilla file (i.e. db.addCost works after openCostsDB).  */
-/* ------------------------------------------------------------------ */
-
 let activeName = 'costsdb';
 let activeVersion = 1;
 let activeKey = buildKey(activeName, activeVersion);
-
-/* ------------------------------------------------------------------ */
-/* Pure helpers                                                       */
-/* ------------------------------------------------------------------ */
 
 function buildKey(name, version) {
     return `${STORE_PREFIX}${String(name)}::v${Number(version)}`;
@@ -69,7 +21,6 @@ function getStorage() {
     if (typeof window !== 'undefined' && window.localStorage) {
         return window.localStorage;
     }
-    // Tiny in-memory shim so unit tests run without a real DOM.
     if (!getStorage._mem) {
         const data = {};
         getStorage._mem = {
@@ -92,7 +43,6 @@ function readCosts(key) {
         const parsed = JSON.parse(raw);
         return Array.isArray(parsed) ? parsed : [];
     } catch (err) {
-        // Recover from a corrupted entry rather than crashing the UI.
         return [];
     }
 }
@@ -121,8 +71,7 @@ function writeRates(rates) {
     try {
         getStorage().setItem(RATES_KEY, JSON.stringify(rates));
     } catch (err) {
-        // Quota or serialisation error: ignore so the calling code is
-        // never forced to deal with a storage failure for caching.
+        // Ignore storage error
     }
 }
 
@@ -135,11 +84,6 @@ function round2(n) {
     return Math.round(n * 100) / 100;
 }
 
-/*
- * Convert an amount between two currencies given a rates table that is
- * expressed "per 1 USD". A missing rate returns the original amount so
- * the UI never silently zeroes out an expense due to a partial table.
- */
 function convertWith(sum, fromCurrency, toCurrency, rates) {
     if (fromCurrency === toCurrency) {
         return sum;
@@ -151,10 +95,6 @@ function convertWith(sum, fromCurrency, toCurrency, rates) {
     }
     return (sum / fromRate) * toRate;
 }
-
-/* ------------------------------------------------------------------ */
-/* Core operations                                                    */
-/* ------------------------------------------------------------------ */
 
 function addCostInternal(key, cost) {
     if (!cost || typeof cost !== 'object') {
@@ -183,7 +123,6 @@ function addCostInternal(key, cost) {
     costs.push(record);
     writeCosts(key, costs);
 
-    // Per spec, addCost returns these four properties only.
     return {
         sum: record.sum,
         currency: record.currency,
@@ -196,9 +135,7 @@ function getReportInternal(key, currency, year, month) {
     const now = new Date();
     const resolvedYear = toNumber(year, now.getFullYear());
     const resolvedMonth = toNumber(month, now.getMonth() + 1);
-    const targetCurrency = (typeof currency === 'string' && currency)
-        ? currency
-        : 'USD';
+    const targetCurrency = (typeof currency === 'string' && currency) ? currency : 'USD';
 
     const rates = readRates();
     const all = readCosts(key);
@@ -244,9 +181,7 @@ function getCategoryBreakdownInternal(key, currency, year, month) {
 function getMonthlyTotalsInternal(key, currency, year) {
     const now = new Date();
     const resolvedYear = toNumber(year, now.getFullYear());
-    const targetCurrency = (typeof currency === 'string' && currency)
-        ? currency
-        : 'USD';
+    const targetCurrency = (typeof currency === 'string' && currency) ? currency : 'USD';
 
     const rates = readRates();
     const all = readCosts(key);
@@ -264,19 +199,6 @@ function getMonthlyTotalsInternal(key, currency, year) {
     return totals.map(round2);
 }
 
-/* ------------------------------------------------------------------ */
-/* Exchange rate fetching (Fetch API)                                 */
-/* ------------------------------------------------------------------ */
-
-/*
- * Fetch and cache the exchange rates from a URL. The endpoint is
- * expected to return JSON of the shape
- *     { "USD":1, "GBP":0.6, "EURO":0.7, "ILS":3.4 }
- * but JSONBin-style envelopes ({ record: { ... } }) are also accepted.
- *
- * Any missing currency in the response is filled in from the defaults
- * so we never end up with an undefined rate at conversion time.
- */
 async function fetchExchangeRatesInternal(url) {
     if (typeof fetch !== 'function') {
         throw new Error('Fetch API is not available in this environment');
@@ -308,18 +230,9 @@ async function fetchExchangeRatesInternal(url) {
     return rates;
 }
 
-/* ------------------------------------------------------------------ */
-/* Public API                                                         */
-/* ------------------------------------------------------------------ */
-
-/*
- * Open or initialise a costs database. Returns a reference object whose
- * methods are pre-bound to this particular store, exactly as the project
- * specification requires.
- */
 export function openCostsDB(databaseName, databaseVersion) {
-    activeName = String(databaseName == null ? 'costsdb' : databaseName);
-    activeVersion = Number(databaseVersion == null ? 1 : databaseVersion);
+    activeName = String(databaseName === null || databaseName === undefined ? 'costsdb' : databaseName);
+    activeVersion = Number(databaseVersion === null || databaseVersion === undefined ? 1 : databaseVersion);
     activeKey = buildKey(activeName, activeVersion);
 
     if (getStorage().getItem(activeKey) === null) {
@@ -341,53 +254,23 @@ export function openCostsDB(databaseName, databaseVersion) {
     };
 }
 
-export function addCost(cost) {
-    return addCostInternal(activeKey, cost);
-}
-
-export function getReport(currency, year, month) {
-    return getReportInternal(activeKey, currency, year, month);
-}
-
-export function getAllCosts() {
-    return readCosts(activeKey);
-}
-
-export function getCategoryBreakdown(currency, year, month) {
-    return getCategoryBreakdownInternal(activeKey, currency, year, month);
-}
-
-export function getMonthlyTotals(currency, year) {
-    return getMonthlyTotalsInternal(activeKey, currency, year);
-}
-
-export function clearCosts() {
-    writeCosts(activeKey, []);
-}
-
-export function fetchExchangeRates(url) {
-    return fetchExchangeRatesInternal(url);
-}
-
+export function addCost(cost) { return addCostInternal(activeKey, cost); }
+export function getReport(currency, year, month) { return getReportInternal(activeKey, currency, year, month); }
+export function getAllCosts() { return readCosts(activeKey); }
+export function getCategoryBreakdown(currency, year, month) { return getCategoryBreakdownInternal(activeKey, currency, year, month); }
+export function getMonthlyTotals(currency, year) { return getMonthlyTotalsInternal(activeKey, currency, year); }
+export function clearCosts() { writeCosts(activeKey, []); }
+export function fetchExchangeRates(url) { return fetchExchangeRatesInternal(url); }
 export function setExchangeRates(rates) {
     if (rates && typeof rates.USD === 'number') {
         writeRates(rates);
     }
 }
-
-export function getExchangeRates() {
-    return readRates();
-}
-
+export function getExchangeRates() { return readRates(); }
 export function convert(sum, fromCurrency, toCurrency) {
     return convertWith(sum, fromCurrency, toCurrency, readRates());
 }
 
-/*
- * Default export mirrors the global `db` object exposed by the vanilla
- * file. Consumers can write `import db from './db'` and call
- * db.openCostsDB(...) / db.addCost(...) / db.getReport(...).
- */
 const db = {
     openCostsDB,
     addCost,
