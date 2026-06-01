@@ -4,17 +4,17 @@
  * Cost Manager - Local Storage data layer.
  * ========================================================================== */
 
-const DEFAULT_RATES = { USD: 1, GBP: 0.6, EURO: 0.7, ILS: 3.4 };
-const RATES_KEY = 'costmgr::exchangeRates';
-const STORE_PREFIX = 'costmgr::';
-const SUPPORTED_CURRENCIES = ['USD', 'GBP', 'EURO', 'ILS'];
+const defaultRates = { USD: 1, GBP: 0.6, EURO: 0.7, ILS: 3.4 };
+const ratesKey = 'costmgr::exchangeRates';
+const storePrefix = 'costmgr::';
+const supportedCurrencies = ['USD', 'GBP', 'EURO', 'ILS'];
 
 let activeName = 'costsdb';
 let activeVersion = 1;
 let activeKey = buildKey(activeName, activeVersion);
 
 function buildKey(name, version) {
-    return `${STORE_PREFIX}${String(name)}::v${Number(version)}`;
+    return `${storePrefix}${String(name)}::v${Number(version)}`;
 }
 
 function getStorage() {
@@ -53,23 +53,23 @@ function writeCosts(key, costs) {
 
 function readRates() {
     try {
-        const raw = getStorage().getItem(RATES_KEY);
+        const raw = getStorage().getItem(ratesKey);
         if (!raw) {
-            return { ...DEFAULT_RATES };
+            return { ...defaultRates };
         }
         const parsed = JSON.parse(raw);
         if (parsed && typeof parsed.USD === 'number') {
-            return { ...DEFAULT_RATES, ...parsed };
+            return { ...defaultRates, ...parsed };
         }
-        return { ...DEFAULT_RATES };
+        return { ...defaultRates };
     } catch (err) {
-        return { ...DEFAULT_RATES };
+        return { ...defaultRates };
     }
 }
 
 function writeRates(rates) {
     try {
-        getStorage().setItem(RATES_KEY, JSON.stringify(rates));
+        getStorage().setItem(ratesKey, JSON.stringify(rates));
     } catch (err) {
         // Ignore storage error
     }
@@ -220,9 +220,9 @@ async function fetchExchangeRatesInternal(url) {
         throw new Error('Rates response has an unexpected shape');
     }
 
-    SUPPORTED_CURRENCIES.forEach((cur) => {
+    supportedCurrencies.forEach((cur) => {
         if (typeof rates[cur] !== 'number') {
-            rates[cur] = DEFAULT_RATES[cur];
+            rates[cur] = defaultRates[cur];
         }
     });
 

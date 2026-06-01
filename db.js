@@ -2,40 +2,6 @@
  * db.js  (Vanilla Version)
  * ----------------------------------------------------------------------------
  * Cost Manager - Local Storage data layer.
- *
- * This file is the engine of the application. It wraps the browser's
- * localStorage and exposes a small, well defined API on the global object
- * (window.db) so it can be consumed both from a plain HTML page (for the
- * automatic test described in the project spec) and from the React UI via
- * a thin ES-module wrapper (src/db.js).
- *
- * Public API (attached to the global "db" object):
- * - openCostsDB(databaseName, databaseVersion)
- * Opens (or initialises) a costs store and returns a reference to it.
- *
- * - addCost(cost)
- * Adds { sum, currency, category, description } to the active store.
- * The cost's date is set automatically to "today".
- *
- * - getReport(currency, year, month)
- * Returns a detailed report for the given month/year, expressed in
- * the requested target currency. Year and month default to "now".
- *
- * Extra helpers (used by the React UI; not required by the spec but
- * documented here for clarity):
- *
- * - getAllCosts()                              raw cost items
- * - getCategoryBreakdown(currency, y, m)       totals per category
- * - getMonthlyTotals(currency, year)           array of 12 totals
- * - fetchExchangeRates(url)                    Fetch API + cache to LS
- * - setExchangeRates(rates) / getExchangeRates()
- * - clearCosts()                               wipe the active store
- *
- * Currency model:
- * The four supported currencies are USD, ILS, GBP, EURO. Exchange rates
- * are expressed against 1 USD, exactly as required by the project doc:
- * { "USD":1, "GBP":0.6, "EURO":0.7, "ILS":3.4 }
- * meaning that 0.6 GBP, 0.7 EURO and 3.4 ILS are each equivalent to 1 USD.
  * ========================================================================== */
 
 (function (global) {
@@ -45,9 +11,9 @@
     /* Constants                                                          */
     /* ------------------------------------------------------------------ */
 
-    const DEFAULT_RATES = { USD: 1, GBP: 0.6, EURO: 0.7, ILS: 3.4 };
-    const RATES_KEY = 'costmgr::exchangeRates';
-    const STORE_PREFIX = 'costmgr::';
+    const defaultRates = { USD: 1, GBP: 0.6, EURO: 0.7, ILS: 3.4 };
+    const ratesKey = 'costmgr::exchangeRates';
+    const storePrefix = 'costmgr::';
 
     /* ------------------------------------------------------------------ */
     /* Internal state                                                     */
@@ -62,7 +28,7 @@
     /* ------------------------------------------------------------------ */
 
     function buildKey(name, version) {
-        return STORE_PREFIX + String(name) + '::v' + Number(version);
+        return storePrefix + String(name) + '::v' + Number(version);
     }
 
     function safeStorage() {
@@ -103,25 +69,25 @@
 
     function readRates() {
         try {
-            const raw = safeStorage().getItem(RATES_KEY);
+            const raw = safeStorage().getItem(ratesKey);
             if (!raw) {
-                return DEFAULT_RATES;
+                return defaultRates;
             }
             const parsed = JSON.parse(raw);
             if (parsed && typeof parsed.USD === 'number') {
                 return parsed;
             }
-            return DEFAULT_RATES;
+            return defaultRates;
         } catch (err) {
-            return DEFAULT_RATES;
+            return defaultRates;
         }
     }
 
     function writeRates(rates) {
         try {
-            safeStorage().setItem(RATES_KEY, JSON.stringify(rates));
+            safeStorage().setItem(ratesKey, JSON.stringify(rates));
         } catch (err) {
-            // Ignore storage failure for caching
+            // Ignore storage failure
         }
     }
 
@@ -287,7 +253,7 @@
 
                 ['USD', 'GBP', 'EURO', 'ILS'].forEach(function (cur) {
                     if (typeof rates[cur] !== 'number') {
-                        rates[cur] = DEFAULT_RATES[cur];
+                        rates[cur] = defaultRates[cur];
                     }
                 });
 
